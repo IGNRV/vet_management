@@ -1,0 +1,56 @@
+<odoo>
+    <data>
+        <record id="animal_partner" model="ir.ui.view">
+            <field name="name">partner.pet.form.view</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='internal_notes']" position="after">
+                    <page string="Animales">
+                        <field name="pet">
+                            <tree>
+                                <field name="name" />
+                                <field name="species" />
+                                <field name="breed" />
+                                <field name="sex" />
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <label for="name" string="Nombre" />
+                                            <div>
+                                                <field name="name" class="fs-1 mb-4" />
+                                            </div>
+                                        </div>
+                                        <field name="photo" widget="image" class="oe_avatar" />
+                                    </div>
+                                    <group>
+                                        <group>
+                                            <field name="identification" />
+                                        </group>
+                                        <group>
+                                            <field name="owner" />
+                                        </group>
+                                        <group>
+                                            <field name="species" />
+                                        </group>
+                                        <group>
+                                            <field name="breed" />
+                                        </group>
+                                        <group>
+                                            <field name="sex" />
+                                        </group>
+                                        <group>
+                                            <field name="size" />
+                                        </group>
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

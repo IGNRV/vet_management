@@ -1,0 +1,62 @@
+<odoo>
+    <data>
+
+        <!-- === TREE === -->
+        <record id="vaccine_tree_view" model="ir.ui.view">
+            <field name="name">animal.vaccine.tree.view</field>
+            <field name="model">animal.vaccine</field>
+            <field name="arch" type="xml">
+                <tree string="Vacunas">
+                    <field name="name"/>
+                    <field name="vials_per_box"/>
+                    <field name="doses_per_vial"/>
+                    <field name="stock_boxes"/>
+                    <field name="stock_vials"/>
+                    <field name="stock_doses"/>
+                    <field name="stock_total_doses" readonly="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- === FORM === -->
+        <record id="vaccine_form_view" model="ir.ui.view">
+            <field name="name">animal.vaccine.form.view</field>
+            <field name="model">animal.vaccine</field>
+            <field name="arch" type="xml">
+                <form string="Vacuna">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="description"/>
+                            </group>
+                            <group string="Presentación">
+                                <field name="vials_per_box"/>
+                                <field name="doses_per_vial"/>
+                                <field name="packaging_notes"/>
+                            </group>
+                        </group>
+                        <group string="Stock">
+                            <group>
+                                <field name="stock_boxes"/>
+                                <field name="stock_vials"/>
+                                <field name="stock_doses"/>
+                            </group>
+                            <group>
+                                <field name="stock_total_doses" readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- === ACTION === -->
+        <record id="vaccine_action" model="ir.actions.act_window">
+            <field name="name">Vacunas</field>
+            <field name="res_model">animal.vaccine</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="vaccine_tree_view"/>
+        </record>
+    </data>
+</odoo>

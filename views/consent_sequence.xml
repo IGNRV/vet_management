@@ -1,0 +1,12 @@
+<odoo>
+  <data noupdate="1">
+    <!-- Secuencia para Consentimientos -->
+    <record id="seq_animal_consent" model="ir.sequence">
+      <field name="name">Animal Consentimiento</field>
+      <field name="code">animal.consent.sequence</field>
+      <field name="prefix">CONS/</field>
+      <field name="padding">4</field>
+      <field name="number_increment">1</field>
+    </record>
+  </data>
+</odoo>

@@ -1,0 +1,76 @@
+<odoo>
+    <data>
+        <!-- === SEARCH (catálogo) === -->
+        <record id="dewormer_search_view" model="ir.ui.view">
+            <field name="name">animal.dewormer.search.view</field>
+            <field name="model">animal.dewormer</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" string="Desparasitante"/>
+                    <field name="description" string="Descripción"/>
+                    <group expand="0" string="Agrupar por">
+                        <filter name="grp_name" string="Nombre" context="{'group_by':'name'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- === TREE (catálogo) === -->
+        <record id="dewormer_tree_view" model="ir.ui.view">
+            <field name="name">animal.dewormer.tree.view</field>
+            <field name="model">animal.dewormer</field>
+            <field name="arch" type="xml">
+                <tree string="Desparasitantes">
+                    <field name="name"/>
+                    <field name="packs_per_box"/>
+                    <field name="units_per_pack"/>
+                    <field name="stock_boxes"/>
+                    <field name="stock_packs"/>
+                    <field name="stock_units"/>
+                    <field name="stock_total_units" readonly="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- === FORM (catálogo) === -->
+        <record id="dewormer_form_view" model="ir.ui.view">
+            <field name="name">animal.dewormer.form.view</field>
+            <field name="model">animal.dewormer</field>
+            <field name="arch" type="xml">
+                <form string="Desparasitante">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="description"/>
+                            </group>
+                            <group string="Presentación">
+                                <field name="packs_per_box"/>
+                                <field name="units_per_pack"/>
+                                <field name="packaging_notes"/>
+                            </group>
+                        </group>
+                        <group string="Stock">
+                            <group>
+                                <field name="stock_boxes"/>
+                                <field name="stock_packs"/>
+                                <field name="stock_units"/>
+                            </group>
+                            <group>
+                                <field name="stock_total_units" readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- === ACTION (catálogo) === -->
+        <record id="dewormer_action" model="ir.actions.act_window">
+            <field name="name">Desparasitantes</field>
+            <field name="res_model">animal.dewormer</field>
+            <field name="view_mode">search,tree,form</field>
+            <field name="view_id" ref="dewormer_tree_view"/>
+        </record>
+    </data>
+</odoo>

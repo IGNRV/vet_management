@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Search -->
+    <record id="consent_search_view" model="ir.ui.view">
+      <field name="name">animal.consent.search.view</field>
+      <field name="model">animal.consent</field>
+      <field name="arch" type="xml">
+        <search>
+          <field name="sequence" string="Referencia"/>
+          <field name="animal_id" string="Animal"/>
+          <field name="owner_id" string="Dueño"/>
+          <field name="date" string="Fecha"/>
+          <field name="consent_type" string="Tipo"/>
+          <field name="state" string="Estado"/>
+          <field name="doctor_name" string="Médico/a"/>
+
+          <group expand="0" string="Agrupar por">
+            <filter name="grp_animal" string="Animal" context="{'group_by':'animal_id'}"/>
+            <filter name="grp_owner" string="Dueño" context="{'group_by':'owner_id'}"/>
+            <filter name="grp_type" string="Tipo" context="{'group_by':'consent_type'}"/>
+            <filter name="grp_state" string="Estado" context="{'group_by':'state'}"/>
+            <filter name="grp_doctor" string="Médico/a" context="{'group_by':'doctor_name'}"/>
+            <filter name="grp_date" string="Fecha" context="{'group_by':'date:month'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <!-- Tree -->
+    <record id="consent_tree_view" model="ir.ui.view">
+      <field name="name">animal.consent.tree.view</field>
+      <field name="model">animal.consent</field>
+      <field name="arch" type="xml">
+        <tree string="Consentimientos">
+          <field name="sequence" string="Ref."/>
+          <field name="date"/>
+          <field name="animal_id"/>
+          <field name="owner_id" string="Dueño"/>
+          <field name="consent_type" string="Tipo"/>
+          <field name="state" string="Estado"/>
+        </tree>
+      </field>
+    </record>
+
+    <!-- Form -->
+    <record id="consent_form_view" model="ir.ui.view">
+      <field name="name">animal.consent.form.view</field>
+      <field name="model">animal.consent</field>
+      <field name="arch" type="xml">
+        <form string="Consentimiento">
+          <header>
+            <button name="action_confirm" type="object" class="btn-primary" string="Marcar como Firmado"
+                    invisible="state != 'draft'"/>
+            <button name="action_cancel" type="object" string="Cancelar"
+                    invisible="not (state in ('draft','signed'))"/>
+            <button name="action_reset_to_draft" type="object" string="Restablecer a Borrador"
+                    invisible="not (state in ('signed','cancelled'))"/>
+
+            <!-- Descarga de PDF -->
+            <button name="%(action_report_consent)d"
+                    type="action"
+                    class="btn-secondary"
+                    string="Descargar PDF"/>
+
+            <field name="state" widget="statusbar" statusbar_visible="draft,signed,cancelled"/>
+          </header>
+
+          <sheet>
+            <!-- Título: Referencia -->
+            <group>
+              <field class="fs-1" name="sequence"/>
+            </group>
+
+            <group>
+              <!-- Datos generales -->
+              <group string="Datos">
+                <group>
+                  <field name="animal_id" required="1"/>
+                </group>
+                <group>
+                  <field name="owner_id" readonly="1"/>
+                </group>
+                <group col="4">
+                  <field name="date" colspan="2"/>
+                  <field name="consent_type" colspan="2"/>
+                </group>
+                <group>
+                  <field name="consent_title" placeholder="(Opcional) Título para el PDF"/>
+                </group>
+              </group>
+
+              <!-- Contenido -->
+              <group string="Contenido del consentimiento" colspan="2">
+                <group>
+                  <field name="description" placeholder="Describa el procedimiento o motivo..."/>
+                  <field name="risks" placeholder="Describa los riesgos y posibles complicaciones..."/>
+                </group>
+                <group>
+                  <field name="post_instructions" placeholder="Indique las instrucciones postprocedimiento..."/>
+                  <field name="notes" placeholder="Notas internas (no se imprimen en el PDF)"/>
+                </group>
+              </group>
+            </group>
+
+            <group string="Firmas y profesional" col="4">
+              <field name="doctor_name" string="Nombre M. Veterinario/a"/>
+              <field name="doctor_rut" string="RUT (médico)"/>
+              <field name="doctor_signature" widget="image" string="Firma Médico/a" colspan="2"/>
+              <field name="owner_signature" widget="image" string="Firma Propietario/a" colspan="2"/>
+            </group>
+          </sheet>
+
+          <div class="oe_chatter">
+            <field widget="mail_thread" name="message_ids"/>
+            <field widget="mail_activity" name="activity_ids"/>
+          </div>
+        </form>
+      </field>
+    </record>
+
+    <!-- Action -->
+    <record id="consent_action" model="ir.actions.act_window">
+      <field name="name">Consentimientos</field>
+      <field name="res_model">animal.consent</field>
+      <field name="view_mode">search,tree,form,kanban</field>
+    </record>
+
+  </data>
+</odoo>
