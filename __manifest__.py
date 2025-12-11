@@ -102,6 +102,6 @@ Incluye visitas, vacunas, cirugías, recetas y más.
     'application': True,
     'auto_install': False,
 
-    'price': 20.0,
+    'price': 25,
     'currency': 'USD',
 }
