@@ -1,0 +1,158 @@
+<odoo>
+  <data>
+
+    <!-- ====== Search ====== -->
+    <record id="sterilization_search_view" model="ir.ui.view">
+      <field name="name">animal.sterilization.search.view</field>
+      <field name="model">animal.sterilization</field>
+      <field name="arch" type="xml">
+        <search>
+          <field name="patient_name" string="Paciente"/>
+          <!-- Antes: specie (Selection). Ahora: specie_id (Many2one). -->
+          <field name="specie_id" string="Especie"/>
+          <field name="sex" string="Sexo"/>
+          <field name="date" string="Fecha"/>
+          <field name="status" string="Estado"/>
+          <field name="vet_name" string="Médico/a"/>
+          <group expand="0" string="Agrupar por">
+            <!-- Actualizamos el group_by a specie_id -->
+            <filter name="grp_specie" string="Especie" context="{'group_by':'specie_id'}"/>
+            <filter name="grp_status" string="Estado" context="{'group_by':'status'}"/>
+            <filter name="grp_vet" string="Médico/a" context="{'group_by':'vet_name'}"/>
+            <filter name="grp_date" string="Fecha" context="{'group_by': 'date:month'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <!-- ====== Tree ====== -->
+    <record id="sterilization_tree_view" model="ir.ui.view">
+      <field name="name">animal.sterilization.tree.view</field>
+      <field name="model">animal.sterilization</field>
+      <field name="arch" type="xml">
+        <tree string="Esterilizaciones">
+          <field name="date"/>
+          <field name="patient_name"/>
+          <!-- Antes: specie. Ahora: specie_id. -->
+          <field name="specie_id" string="Especie"/>
+          <field name="sex"/>
+          <field name="weight"/>
+          <field name="procedure_type"/>
+          <field name="status"/>
+          <field name="vet_name"/>
+        </tree>
+      </field>
+    </record>
+
+    <!-- ====== Form ====== -->
+    <record id="sterilization_form_view" model="ir.ui.view">
+      <field name="name">animal.sterilization.form.view</field>
+      <field name="model">animal.sterilization</field>
+      <field name="arch" type="xml">
+        <form string="Esterilización">
+          <header>
+            <!-- Botón para imprimir PDF -->
+            <button name="%(action_report_sterilization)d"
+                    type="action"
+                    class="btn-primary"
+                    string="Imprimir Ficha"/>
+          </header>
+
+          <sheet>
+
+            <!-- Enlaces opcionales a registros -->
+            <group>
+              <group>
+                <field name="animal_id"/>
+              </group>
+              <group>
+                <field name="owner_id" string="Responsable (contacto)"/>
+              </group>
+            </group>
+
+            <!-- ===== Datos responsable ===== -->
+            <group string="Datos responsable" col="4">
+              <field name="date"/>
+              <field name="resp_rut"/>
+              <field name="resp_birthdate" string="Fecha de nacimiento"/>
+              <field name="resp_name" string="Nombre"/>
+              <field name="resp_phone1" string="Teléfono 1"/>
+              <field name="resp_phone2" string="Teléfono 2"/>
+              <field name="resp_address" string="Dirección" colspan="2"/>
+              <field name="resp_commune" string="Comuna"/>
+              <field name="resp_region" string="Región"/>
+              <field name="resp_email" string="Mail" colspan="2"/>
+              <field name="resp_is_owner" widget="boolean_toggle" string="¿Es dueño/a de la mascota?"/>
+            </group>
+
+            <!-- ===== Datos Paciente ===== -->
+            <group string="Datos Paciente" col="4">
+              <field name="patient_name" string="Nombre"/>
+
+              <!-- Antes: <field name="specie"/> -->
+              <field name="specie_id" string="Especie" options="{'no_open': False, 'no_create_edit': False}"/>
+
+              <!-- Antes: <field name="breed_text" string="Raza"/> -->
+              <field name="breed_id" string="Raza"
+                     domain="[('specie', '=', specie_id)]"
+                     options="{'no_open': False, 'no_create_edit': False}"/>
+
+              <field name="patient_birthdate" string="Fecha de Nacimiento"/>
+              <field name="sex"/>
+              <field name="color"/>
+              <field name="weight" string="Peso (Kg)"/>
+              <field name="pattern" string="Patrón"/>
+              <field name="tenancy_type" string="Tipo Tenencia"/>
+              <field name="commune_obtention" string="Comuna Obtención"/>
+              <field name="animals_at_home" string="N° total animales en casa"/>
+              <field name="obtention" string="Obtención"/>
+              <separator string="Razón tenencia" colspan="4"/>
+              <field name="tenure_reason" colspan="2"/>
+              <!-- v17: usar invisible con expresión booleana -->
+              <field name="tenure_reason_other" invisible="tenure_reason != 'otro'"/>
+              <separator string="Antecedentes" colspan="4"/>
+              <field name="already_sterilized"/>
+              <field name="visited_vet_before"/>
+              <field name="microchip_today"/>
+            </group>
+
+            <!-- ===== Procedimiento ===== -->
+            <group string="Procedimiento" col="4">
+              <field name="procedure_type"/>
+              <!-- v17: invisibilidad en expresión directa -->
+              <field name="ovario_approach" invisible="procedure_type != 'ovariohisterectomia'"/>
+              <field name="orchiectomy_type" invisible="procedure_type != 'orquiectomia'"/>
+              <field name="vet_name" string="Nombre M.veterinario/a"/>
+              <field name="vet_rut" string="RUT"/>
+              <field name="signature" widget="image" string="Firma y timbre" colspan="2"/>
+            </group>
+
+            <!-- ===== Resultado procedimientos ===== -->
+            <group string="Resultado procedimientos" col="4">
+              <field name="status" string="Estado"/>
+              <!-- v17: invisibles cuando no es 'fallecido' -->
+              <field name="death_cause" invisible="status != 'fallecido'"/>
+              <field name="death_moment" invisible="status != 'fallecido'"/>
+              <field name="death_date" invisible="status != 'fallecido'"/>
+              <field name="notes" colspan="4"/>
+            </group>
+
+          </sheet>
+
+          <div class="oe_chatter">
+            <field widget="mail_thread" name="message_ids"/>
+            <field widget="mail_activity" name="activity_ids"/>
+          </div>
+        </form>
+      </field>
+    </record>
+
+    <!-- ====== Action ====== -->
+    <record id="sterilization_action" model="ir.actions.act_window">
+      <field name="name">Esterilizaciones</field>
+      <field name="res_model">animal.sterilization</field>
+      <field name="view_mode">search,tree,form,kanban</field>
+    </record>
+
+  </data>
+</odoo>

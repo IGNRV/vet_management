@@ -1,0 +1,13 @@
+<odoo>
+    <data noupdate="1">
+        <!-- Secuencia para el modelo animal.visit -->
+        <record id="seq_animal_visit" model="ir.sequence">
+            <field name="name">Animal Visita</field>
+            <field name="code">animal.visit.sequence</field>
+            <field name="prefix">VISIT/</field>
+            <field name="padding">4</field>
+            <field name="number_increment">1</field>
+        </record>
+    </data>
+</odoo>
+    

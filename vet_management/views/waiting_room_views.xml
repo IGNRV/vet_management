@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- ===== Search ===== -->
+    <record id="waiting_ticket_search_view" model="ir.ui.view">
+      <field name="name">vet.waiting.ticket.search.view</field>
+      <field name="model">vet.waiting.ticket</field>
+      <field name="arch" type="xml">
+        <search string="Buscar tickets de sala de espera">
+          <field name="sequence" string="Ticket"/>
+          <field name="animal_id" string="Animal"/>
+          <field name="owner_id" string="Dueño"/>
+          <field name="arrival_time" string="Ingreso"/>
+          <field name="priority" string="Prioridad"/>
+          <field name="state" string="Estado"/>
+          <field name="doctor" string="Dr/Dra"/>
+          <field name="room" string="Box"/>
+          <field name="reason" string="Motivo"/>
+
+          <group expand="0" string="Agrupar por">
+            <filter name="grp_state" string="Estado" context="{'group_by':'state'}"/>
+            <filter name="grp_priority" string="Prioridad" context="{'group_by':'priority'}"/>
+            <filter name="grp_date" string="Ingreso (día)" context="{'group_by':'arrival_time:day'}"/>
+            <filter name="grp_doctor" string="Dr/Dra" context="{'group_by':'doctor'}"/>
+            <filter name="grp_room" string="Box" context="{'group_by':'room'}"/>
+          </group>
+
+          <filter name="flt_waiting" string="En espera" domain="[('state','=','waiting')]"/>
+          <filter name="flt_called" string="Llamado" domain="[('state','=','called')]"/>
+          <filter name="flt_in_consultation" string="En consulta" domain="[('state','=','in_consultation')]"/>
+          <filter name="flt_done" string="Atendidos" domain="[('state','=','done')]"/>
+          <filter name="flt_cancelled" string="Cancelados" domain="[('state','=','cancelled')]"/>
+        </search>
+      </field>
+    </record>
+
+    <!-- ===== Tree ===== -->
+    <record id="waiting_ticket_tree_view" model="ir.ui.view">
+      <field name="name">vet.waiting.ticket.tree.view</field>
+      <field name="model">vet.waiting.ticket</field>
+      <field name="arch" type="xml">
+        <tree string="Tickets" create="true" edit="true">
+          <field name="sequence" string="Ticket"/>
+          <field name="arrival_time" string="Ingreso"/>
+          <field name="animal_id" string="Animal"/>
+          <field name="owner_id" string="Dueño"/>
+          <field name="reason" string="Motivo"/>
+          <field name="priority" string="Prioridad"/>
+          <field name="waiting_minutes" string="Min. espera"/>
+          <field name="doctor" string="Dr/Dra"/>
+          <field name="room" string="Box"/>
+          <field name="state" string="Estado"/>
+        </tree>
+      </field>
+    </record>
+
+    <!-- ===== Form ===== -->
+    <record id="waiting_ticket_form_view" model="ir.ui.view">
+      <field name="name">vet.waiting.ticket.form.view</field>
+      <field name="model">vet.waiting.ticket</field>
+      <field name="arch" type="xml">
+        <form string="Ticket Sala de Espera">
+          <header>
+            <!-- Odoo 17: usar invisibility con expresiones en lugar de 'states' / 'attrs' -->
+            <button name="action_call"
+                    type="object"
+                    class="btn-primary"
+                    string="Llamar"
+                    invisible="not (state in ('waiting','paused'))"/>
+            <button name="action_start_consultation"
+                    type="object"
+                    class="btn-primary"
+                    string="Iniciar atención"
+                    invisible="not (state in ('waiting','called','paused'))"/>
+            <button name="action_pause"
+                    type="object"
+                    class="btn-secondary"
+                    string="Pausar"
+                    invisible="state != 'in_consultation'"/>
+            <button name="action_resume"
+                    type="object"
+                    class="btn-secondary"
+                    string="Reanudar"
+                    invisible="state != 'paused'"/>
+            <button name="action_open_visit"
+                    type="object"
+                    class="btn-secondary"
+                    string="Abrir visita"
+                    invisible="not visit_id"/>
+            <button name="action_done"
+                    type="object"
+                    class="btn-primary"
+                    string="Finalizar"
+                    invisible="not (state in ('in_consultation','called','paused'))"/>
+            <button name="action_cancel"
+                    type="object"
+                    string="Cancelar"
+                    invisible="state in ('done','cancelled')"/>
+            <button name="action_reset_to_waiting"
+                    type="object"
+                    string="Volver a En espera"
+                    invisible="state == 'waiting'"/>
+
+            <field name="state"
+                   widget="statusbar"
+                   statusbar_visible="waiting,called,in_consultation,paused,done,cancelled"/>
+          </header>
+
+          <sheet>
+            <group>
+              <group string="Ticket">
+                <field name="sequence" readonly="1"/>
+                <field name="priority"/>
+                <field name="room" string="Box"/>
+                <field name="doctor" string="Dr/Dra asignado/a"/>
+              </group>
+              <group string="Paciente">
+                <field name="animal_id" required="1"/>
+                <field name="owner_id" readonly="1"/>
+                <field name="specie_id" readonly="1"/>
+                <field name="breed_id" readonly="1"/>
+                <field name="sex" readonly="1"/>
+                <field name="microchip_number" readonly="1"/>
+              </group>
+            </group>
+
+            <group>
+              <group string="Tiempos">
+                <field name="arrival_time" required="1"/>
+                <field name="called_time" readonly="1"/>
+                <field name="start_time" readonly="1"/>
+                <field name="end_time" readonly="1"/>
+                <field name="waiting_minutes" readonly="1"/>
+              </group>
+              <group string="Visita vinculada">
+                <field name="visit_id" readonly="1"/>
+                <field name="state" readonly="1"/>
+              </group>
+            </group>
+
+            <group string="Motivo / Notas">
+              <field name="reason"/>
+              <field name="notes"/>
+            </group>
+          </sheet>
+
+          <div class="oe_chatter">
+            <field widget="mail_thread" name="message_ids"/>
+            <field widget="mail_activity" name="activity_ids"/>
+          </div>
+        </form>
+      </field>
+    </record>
+
+    <!-- ===== Actions ===== -->
+    <record id="waiting_ticket_action" model="ir.actions.act_window">
+      <field name="name">Tickets</field>
+      <field name="res_model">vet.waiting.ticket</field>
+      <field name="view_mode">search,tree,form,kanban</field>
+    </record>
+
+    <record id="waiting_ticket_waiting_action" model="ir.actions.act_window">
+      <field name="name">Tickets - En espera</field>
+      <field name="res_model">vet.waiting.ticket</field>
+      <field name="view_mode">search,tree,form,kanban</field>
+      <field name="domain">[('state','=','waiting')]</field>
+    </record>
+
+    <record id="waiting_ticket_in_consultation_action" model="ir.actions.act_window">
+      <field name="name">Tickets - En consulta</field>
+      <field name="res_model">vet.waiting.ticket</field>
+      <field name="view_mode">search,tree,form,kanban</field>
+      <field name="domain">[('state','=','in_consultation')]</field>
+    </record>
+
+    <record id="waiting_ticket_done_action" model="ir.actions.act_window">
+      <field name="name">Tickets - Atendidos</field>
+      <field name="res_model">vet.waiting.ticket</field>
+      <field name="view_mode">search,tree,form,kanban</field>
+      <field name="domain">[('state','=','done')]</field>
+    </record>
+
+    <record id="waiting_ticket_cancelled_action" model="ir.actions.act_window">
+      <field name="name">Tickets - Cancelados</field>
+      <field name="res_model">vet.waiting.ticket</field>
+      <field name="view_mode">search,tree,form,kanban</field>
+      <field name="domain">[('state','=','cancelled')]</field>
+    </record>
+
+    <!-- (Opcional) Acción de servidor para 'Llamar siguiente' -->
+    <record id="waiting_ticket_call_next_server_action" model="ir.actions.server">
+      <field name="name">Llamar siguiente ticket</field>
+      <field name="model_id" ref="model_vet_waiting_ticket"/>
+      <field name="state">code</field>
+      <field name="code">action = env['vet.waiting.ticket'].action_call_next()</field>
+    </record>
+
+  </data>
+</odoo>

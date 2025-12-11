@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Paperformat SIN header reservado (Odoo 17) -->
+    <record id="paperformat_consent_noheader" model="report.paperformat">
+      <field name="name">Consent PDF (no header)</field>
+      <field name="format">A4</field>
+      <field name="orientation">Portrait</field>
+      <field name="margin_top">6</field>
+      <field name="margin_bottom">8</field>
+      <field name="margin_left">10</field>
+      <field name="margin_right">10</field>
+      <field name="header_line">False</field>
+      <field name="header_spacing">0</field>
+    </record>
+
+    <!-- Acción de reporte PDF -->
+    <record id="action_report_consent" model="ir.actions.report">
+      <field name="name">Consentimiento Informado</field>
+      <field name="model">animal.consent</field>
+      <field name="report_type">qweb-pdf</field>
+      <field name="report_name">vet_management.report_consent</field>
+      <field name="report_file">vet_management.report_consent</field>
+      <field name="paperformat_id" ref="vet_management.paperformat_consent_noheader"/>
+      <field name="print_report_name">
+        (object.sequence or 'Consentimiento') + ' - ' + (dict(object._fields['consent_type'].selection).get(object.consent_type) if object.consent_type else (object.consent_title or 'Documento')) + '.pdf'
+      </field>
+    </record>
+
+    <!-- Contenedor por registro -->
+    <template id="report_consent">
+      <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="doc">
+          <t t-call="vet_management.report_consent_document"/>
+          <div class="pagebreak"/>
+        </t>
+      </t>
+    </template>
+
+    <!-- Documento -->
+    <template id="report_consent_document">
+      <t t-set="o" t-value="doc"/>
+      <t t-call="web.external_layout">
+        <style type="text/css">
+          .cst * { font-size: 12px; font-family: "DejaVu Sans", sans-serif; }
+          .cst .title { font-size: 18px; font-weight: 700; text-align:center; }
+          .cst .subtitle { font-size: 12px; text-align:center; }
+          .cst table { width: 100%; border-collapse: collapse; }
+          .cst th, .cst td { border: 0; padding: 4px 6px; vertical-align: top; }
+          .cst .section { font-weight: 700; text-align:center; border: 1px solid #000; background: #f3f3f3; }
+          .cst .boxed { border: 1px solid #000; }
+          .cst .label { width: 22%; white-space: nowrap; }
+          .cst .val { width: 28%; border-bottom: 1px solid #000; }
+          .cst .val2 { border-bottom: 1px solid #000; }
+          .cst .muted { color:#666; }
+          .cst .header-strip { margin-bottom: 4px; }
+          .cst .header-image { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+          .cst .header-date { text-align: right; margin: 2px 0 6px; }
+          .cst .small { font-size: 11px; }
+
+          /* Firmas: columnas sin bordes */
+          .cst .signrow { display: table; width: 100%; margin-top: 28px; }
+          .cst .signcol { display: table-cell; width: 50%; padding: 0 6px; vertical-align: top; }
+          .cst .signbox { text-align: center; padding-top: 90px; min-height: 130px; }
+          .cst .sigline { border-top: 1px solid #000; margin: 0 10% 6px; }
+          .cst .siglabel { font-size: 12px; }
+
+          /* Ocultar pie y header estándar SOLO en este reporte */
+          .footer,
+          .o_footer,
+          .o_report_layout_standard .footer,
+          .o_report_layout_boxed .footer,
+          .o_report_layout_bold .footer,
+          .header,
+          .o_header,
+          .o_report_layout_standard .header,
+          .o_report_layout_boxed .header,
+          .o_report_layout_bold .header {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+          }
+          .footer * { border: 0 !important; }
+        </style>
+
+        <div class="cst">
+
+          <!-- Cabecera con imagen -->
+          <div class="header-strip">
+            <img class="header-image"
+                 t-if="consent_header_image"
+                 t-att-src="'data:image/png;base64,%s' % (consent_header_image)"
+                 alt="Encabezado"/>
+          </div>
+
+          <!-- Fecha + Título -->
+          <div class="header-date">
+            Fecha:
+            <span class="val2">
+              <span t-field="o.date" t-options='{"widget": "date"}'/>
+            </span>
+          </div>
+
+          <div class="title" style="margin:6px 0;">
+            <!-- Título requerido: 'Consentimiento ' + etiqueta del tipo seleccionado -->
+            <t t-esc="'Consentimiento ' + dict(o._fields['consent_type'].selection).get(o.consent_type) if o.consent_type else 'Consentimiento'"/>
+          </div>
+
+          <!-- Información del propietario -->
+          <table class="boxed" style="margin-top:6px;">
+            <tr>
+              <th class="section" colspan="4">Información del propietario</th>
+            </tr>
+            <tr>
+              <td class="label">Nombre completo :</td>
+              <td class="val">
+                <t t-esc="o.owner_id and (o.owner_id.name or '')"/>
+              </td>
+              <td class="label">RUT :</td>
+              <td class="val">
+                <t t-esc="o.owner_id and (o.owner_id.vat or '')"/>
+              </td>
+            </tr>
+            <tr>
+              <td class="label">Teléfono :</td>
+              <td class="val">
+                <t t-esc="o.owner_id and (o.owner_id.phone or o.owner_id.mobile or '')"/>
+              </td>
+              <td class="label">Correo :</td>
+              <td class="val">
+                <t t-esc="o.owner_id and (o.owner_id.email or '')"/>
+              </td>
+            </tr>
+            <tr>
+              <td class="label">Dirección :</td>
+              <td class="val" colspan="3">
+                <t t-esc="o.owner_id and (o.owner_id.street or '')"/>
+              </td>
+            </tr>
+          </table>
+
+          <!-- Información del paciente -->
+          <table class="boxed" style="margin-top:8px;">
+            <tr>
+              <th class="section" colspan="6">Información del paciente</th>
+            </tr>
+            <tr>
+              <td class="label">Nombre:</td>
+              <td class="val">
+                <t t-esc="o.animal_id and (o.animal_id.name or '')"/>
+              </td>
+              <td class="label">Especie (C/F):</td>
+              <td class="val">
+                <t t-esc="o.specie_id and o.specie_id.name or ''"/>
+              </td>
+              <td class="label">N° de Microchip:</td>
+              <td class="val">
+                <t t-esc="o.microchip_number or ''"/>
+              </td>
+            </tr>
+            <tr>
+              <td class="label">Sexo:</td>
+              <td class="val">
+                <t t-esc="({'male':'Macho','female':'Hembra'}).get(o.sex) if o.sex else ''"/>
+              </td>
+              <td class="label">Raza:</td>
+              <td class="val">
+                <t t-esc="o.breed_id and o.breed_id.name or ''"/>
+              </td>
+              <td class="label"></td>
+              <td class="val"></td>
+            </tr>
+          </table>
+
+          <!-- Descripción del procedimiento -->
+          <table class="boxed" style="margin-top:8px;">
+            <tr><th class="section">Descripción del procedimiento / motivo</th></tr>
+            <tr>
+              <td class="val2" style="height: 110px;">
+                <t t-esc="o.description or ''"/>
+              </td>
+            </tr>
+          </table>
+
+          <!-- Riesgos -->
+          <table class="boxed" style="margin-top:8px;">
+            <tr><th class="section">Riesgos y posibles complicaciones</th></tr>
+            <tr>
+              <td class="val2" style="height: 110px;">
+                <t t-esc="o.risks or ''"/>
+              </td>
+            </tr>
+          </table>
+
+          <!-- Instrucciones Postprocedimiento -->
+          <table class="boxed" style="margin-top:8px;">
+            <tr><th class="section">Instrucciones postprocedimiento</th></tr>
+            <tr>
+              <td class="val2" style="height: 84px;">
+                <t t-esc="o.post_instructions or ''"/>
+              </td>
+            </tr>
+          </table>
+
+          <!-- Datos del profesional -->
+          <table class="boxed" style="margin-top:8px;">
+            <tr>
+              <th class="section" colspan="4">Profesional responsable</th>
+            </tr>
+            <tr>
+              <td class="label">Nombre M. Veterinario/a:</td>
+              <td class="val">
+                <t t-esc="o.doctor_name or ''"/>
+              </td>
+              <td class="label">RUT:</td>
+              <td class="val">
+                <t t-esc="o.doctor_rut or ''"/>
+              </td>
+            </tr>
+          </table>
+
+          <!-- Firmas (propietario y médico) -->
+          <div class="signrow">
+            <div class="signcol">
+              <div class="signbox">
+                <div t-if="o.owner_signature" class="center">
+                  <img t-att-src="image_data_uri(o.owner_signature)" style="max-height:90px;"/>
+                </div>
+                <div class="sigline"></div>
+                <div class="siglabel">FIRMA PROPIETARIO/A</div>
+              </div>
+            </div>
+            <div class="signcol">
+              <div class="signbox">
+                <div t-if="o.doctor_signature" class="center">
+                  <img t-att-src="image_data_uri(o.doctor_signature)" style="max-height:90px;"/>
+                </div>
+                <div class="sigline"></div>
+                <div class="siglabel">FIRMA MÉDICO VETERINARIO</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="small muted" style="margin-top:6px;">
+            Ref.: <t t-esc="o.sequence or ''"/> — Paciente: <t t-esc="o.animal_id and o.animal_id.name or ''"/>
+          </div>
+        </div>
+      </t>
+    </template>
+
+  </data>
+</odoo>

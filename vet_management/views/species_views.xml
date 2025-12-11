@@ -1,0 +1,10 @@
+<odoo>
+    <data>
+
+        <record id="specie_action" model="ir.actions.act_window">
+            <field name="name">Especies</field>
+            <field name="res_model">animal.specie</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    </data>
+</odoo>

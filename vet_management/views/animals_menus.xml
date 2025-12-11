@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Menú raíz -->
+        <menuitem id="menu_animals" name="Vet" sequence="5"/>
+
+        <!-- === NUEVO CONTENEDOR: Gestión de Sala de Espera === -->
+        <menuitem
+            id="menu_waiting_room"
+            name="Gestión de Sala de Espera"
+            parent="menu_animals"
+            sequence="2"
+        />
+        <menuitem
+            id="menu_waiting_room_tickets"
+            name="Tickets"
+            parent="menu_waiting_room"
+            action="waiting_ticket_action"
+            sequence="1"
+        />
+        <menuitem
+            id="menu_waiting_room_waiting"
+            name="En espera"
+            parent="menu_waiting_room"
+            action="waiting_ticket_waiting_action"
+            sequence="2"
+        />
+        <menuitem
+            id="menu_waiting_room_in_consultation"
+            name="En consulta"
+            parent="menu_waiting_room"
+            action="waiting_ticket_in_consultation_action"
+            sequence="3"
+        />
+        <menuitem
+            id="menu_waiting_room_done"
+            name="Atendidos"
+            parent="menu_waiting_room"
+            action="waiting_ticket_done_action"
+            sequence="4"
+        />
+        <menuitem
+            id="menu_waiting_room_cancelled"
+            name="Cancelados"
+            parent="menu_waiting_room"
+            action="waiting_ticket_cancelled_action"
+            sequence="5"
+        />
+
+        <!-- Listado de animales -->
+        <menuitem
+            id="menu_animals_list"
+            name="Animales"
+            parent="menu_animals"
+            action="animals_action"
+            sequence="1"
+        />
+
+        <!-- Visitas -->
+        <menuitem
+            id="menu_visits_list"
+            name="Visitas"
+            parent="menu_animals"
+            action="visit_action"
+            sequence="3"
+        />
+
+        <!-- Esterilizaciones -->
+        <menuitem
+            id="menu_sterilizations_list"
+            name="Esterilizaciones"
+            parent="menu_animals"
+            action="sterilization_action"
+            sequence="4"
+        />
+
+        <!-- Contenedor: Gestión Médica -->
+        <menuitem
+            id="menu_medical_management"
+            name="Gestión Médica"
+            parent="menu_animals"
+            action="animals_action"
+            sequence="5"
+        />
+
+        <menuitem
+            id="menu_medicines_list"
+            name="Medicamentos"
+            parent="menu_medical_management"
+            action="medicine_action"
+        />
+        <menuitem
+            id="menu_vaccines_list"
+            name="Vacunas"
+            parent="menu_medical_management"
+            action="vaccine_action"
+        />
+
+        <!-- *** NUEVO: Catálogo de Desparasitantes *** -->
+        <menuitem
+            id="menu_dewormers_list"
+            name="Desparasitantes"
+            parent="menu_medical_management"
+            action="dewormer_action"
+        />
+
+        <!-- *** NUEVO: Menú independiente para REGISTROS de desparasitación *** -->
+        <menuitem
+            id="menu_dewormings_list"
+            name="Registros de Desparasitaciones"
+            parent="menu_medical_management"
+            action="deworming_action"
+        />
+
+        <!-- *** EXISTENTE: REGISTROS de vacunación *** -->
+        <menuitem
+            id="menu_vaccinations_list"
+            name="Registros de Vacunación"
+            parent="menu_medical_management"
+            action="vaccination_action"
+        />
+
+        <!-- *** NUEVO: REGISTROS de MEDICACIÓN *** -->
+        <menuitem
+            id="menu_medications_list"
+            name="Registros de Medicación"
+            parent="menu_medical_management"
+            action="medication_action"
+        />
+
+        <!-- *** NUEVO: CONSENTIMIENTOS *** -->
+        <menuitem
+            id="menu_consents_list"
+            name="Consentimientos"
+            parent="menu_medical_management"
+            action="consent_action"
+        />
+
+        <menuitem
+            id="menu_allergies_list"
+            name="Alergias"
+            parent="menu_medical_management"
+            action="allergy_action"
+        />
+
+        <!-- ====== CIRUGÍAS (AMPLIADO) ======
+             Convertimos el ítem previo de "Cirugías" en CONTENEDOR
+             y añadimos dos submenús: Registro y Catálogo. -->
+        <menuitem
+            id="menu_surgeries_list"
+            name="Cirugías"
+            parent="menu_medical_management"
+        />
+        <menuitem
+            id="menu_vet_surgery_record"
+            name="Registro quirúrgico"
+            parent="menu_surgeries_list"
+            action="action_surgery_record"
+            sequence="10"
+        />
+        <menuitem
+            id="menu_vet_surgery_catalog"
+            name="Catálogo de cirugías"
+            parent="menu_surgeries_list"
+            action="action_surgery_catalog"
+            sequence="20"
+        />
+
+        <!-- Órdenes de Exámenes -->
+        <menuitem
+            id="menu_exam_orders_list"
+            name="Órdenes de Exámenes"
+            parent="menu_medical_management"
+            action="exam_order_action"
+        />
+
+        <!-- Resultados de Exámenes (solo 'done') -->
+        <menuitem
+            id="menu_exam_results_list"
+            name="Resultados de Exámenes"
+            parent="menu_medical_management"
+            action="exam_results_action"
+        />
+
+        <!-- Seguros -->
+        <menuitem
+            id="menu_insurances_list"
+            name="Seguros"
+            parent="menu_medical_management"
+            action="insurance_action"
+        />
+
+        <!-- Configuración -->
+        <menuitem
+            id="menu_configuration"
+            name="Configuration"
+            parent="menu_animals"
+            action="animals_action"
+            sequence="6"
+        />
+
+        <menuitem
+            id="menu_species_list"
+            name="Especies"
+            parent="menu_configuration"
+            action="specie_action"
+            sequence="1"
+        />
+        <menuitem
+            id="menu_breeds_list"
+            name="Razas"
+            parent="menu_configuration"
+            action="breed_action"
+            sequence="2"
+        />
+        <menuitem
+            id="menu_tags_list"
+            name="Etiquetas"
+            parent="menu_configuration"
+            action="tag_action"
+            sequence="3"
+        />
+        <menuitem
+            id="menu_prescriptions_list"
+            name="Recetas"
+            parent="menu_medical_management"
+            action="prescription_action"
+        />
+    </data>
+</odoo>

@@ -1,0 +1,10 @@
+<odoo>
+    <data>
+
+        <record id="insurance_action" model="ir.actions.act_window">
+            <field name="name">Seguros</field>
+            <field name="res_model">animal.insurance</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    </data>
+</odoo>

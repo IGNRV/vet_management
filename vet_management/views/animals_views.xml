@@ -1,0 +1,400 @@
+<odoo>
+  <data>
+
+    <record id="vet_search_view" model="ir.ui.view">
+      <field name="name">animal.search.view</field>
+      <field name="model">animal</field>
+      <field name="arch" type="xml">
+        <search>
+          <field name="name" />
+          <field name="owner" />
+          <field name="breed" />
+          <field name="species" />
+          <field name="identification" />
+          <field name="microchip_number" string="N° de microchip"/>
+          <field name="age" string="Edad"/>
+          <field name="reproductive_status" string="Esterilizado/Entero"/>
+          <field name="tags" string="Color"/>
+          <field name="internal_notes" />
+          <group>
+            <filter name="visited" string="Visited" domain="[('visit_ids', '>' , '0')]" />
+            <filter name="surgeries" string="With surgeries" domain="[('surgeries', '>' , '0')]" />
+            <filter name="archived" string="Archived"
+              domain="[('active', '!=' , 'true')]" />
+          </group>
+          <group expand="0" string="Animal info">
+            <filter name="owner" string="Dueño" domain="[('owner', '=' , 'self')]"
+              context="{'group_by':'owner'}" />
+            <filter name="breed" string="Raza" domain="[('breed','=','self')]"
+              context="{'group_by':'breed'}" />
+            <filter name="species" string="Especie" domain="[('species', '=' , 'self')]"
+              context="{'group_by':'species'}" />
+            <filter name="size" string="Tamaño" domain="[('size', '=' , 'self')]"
+              context="{'group_by':'size'}" />
+            <filter name="sex" string="Sexo" domain="[('sex', '=' , 'self')]"
+              context="{'group_by':'sex'}" />
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <record id="vet_tree_view" model="ir.ui.view">
+      <field name="model">animal</field>
+      <field name="name">animal.tree.view</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="identification" />
+          <field name="microchip_number" string="N° de microchip"/>
+          <field name="name" />
+          <field name="owner" />
+          <field name="breed" />
+          <field name="species" />
+          <field name="sex" />
+          <field name="age" string="Edad"/>
+          <field name="reproductive_status" string="Esterilizado/Entero"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="vet_form_view" model="ir.ui.view">
+      <field name="model">animal</field>
+      <field name="name">animal.form.view</field>
+      <field name="arch" type="xml">
+        <form>
+          <header>
+            <button name="action_create_quote" type="object" string="Crear Presupuesto"
+              class="btn-primary"
+            />
+          </header>
+          <sheet>
+            <div class="oe_button_box" name="button_box">
+              <button name="action_view_quotes" type="object" class="oe_stat_button"
+                icon="fa-dollar">
+                <field name="quote_count" widget="statinfo" string="Quotes" />
+              </button>
+              <button name="action_view_invoices" type="object" class="oe_stat_button"
+                icon="fa-money">
+                <field name="invoice_count" widget="statinfo" string="Invoices" />
+              </button>
+              <button name="action_view_visits" type="object" class="oe_stat_button"
+                icon="fa-building">
+                <field name="visit_count" widget="statinfo" string="Visitas" />
+              </button>
+            </div>
+            <div class="d-flex justify-content-between">
+              <div>
+                <label for="name" string="Nombre" />
+                <div>
+                  <field name="name" class="fs-1 mb-4" />
+                </div>
+              </div>
+              <field name="photo" widget="image" class="oe_avatar" />
+            </div>
+
+            <!-- ======= BLOQUE CON CAMPOS BÁSICOS ======= -->
+            <group>
+              <group>
+                <field name="identification" />
+              </group>
+              <group>
+                <field name="microchip_number" string="N° de microchip"/>
+              </group>
+              <group>
+                <field name="owner" />
+              </group>
+
+              <!-- Especie: Many2one a animal.specie, solo seleccionar registros existentes -->
+              <group>
+                <field name="species"
+                       string="Especie"
+                       options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+              </group>
+
+              <!-- Raza: Many2one a animal.breed, filtrado por la especie seleccionada -->
+              <group>
+                <field name="breed"
+                       string="Raza"
+                       domain="[('specie', '=', species)]"
+                       options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+              </group>
+
+              <!-- NUEVOS INPUTS AL LADO DE "Raza" -->
+              <group>
+                <field name="birthdate" string="Fecha de nacimiento"/>
+              </group>
+              <group>
+                <field name="character" string="Caracter"/>
+              </group>
+              <group>
+                <field name="habitat" string="Habitat"/>
+              </group>
+              <group>
+                <field name="treating_doctor" string="Medico tratante"/>
+              </group>
+              <group>
+                <field name="hair_type" string="Tipo de pelo"/>
+              </group>
+              <group>
+                <field name="diet" string="Dieta"/>
+              </group>
+            </group>
+
+            <notebook>
+              <page string="Visitas">
+                <field name="visit_ids">
+                  <tree>
+                    <field name="sequence" />
+                    <field name="date" />
+                    <field name="reason" />
+                    <field name="suggested_treatment" />
+                    <field name="observations" />
+                  </tree>
+
+                  <form>
+                    <group>
+                      <field name="date" />
+                      <field name="reason" />
+                      <field name="suggested_treatment" />
+                      <field name="observations" />
+                    </group>
+                  </form>
+                </field>
+              </page>
+
+              <!-- ======== MEDICAMENTOS (catálogo rápido) + MEDICACIONES (registros) ======== -->
+              <page string="Medicamentos">
+                <group string="Catálogo asociado (tags rápidos)">
+                  <field name="medicines" widget="many2many_tags"/>
+                </group>
+
+                <group string="Registros de medicación">
+                  <field name="medication_ids" context="{'default_animal_id': active_id}">
+                    <tree editable="bottom">
+                      <field name="date"/>
+                      <field name="medicine_id"/>
+                      <field name="quantity_units" string="Cantidad (unidades)"/>
+                      <field name="doctor" string="Dr/Dra"/>
+                      <field name="consume_stock"/>
+                      <field name="lot_number"/>
+                      <field name="lot_expiration"/>
+                      <field name="notes"/>
+                    </tree>
+                    <form>
+                      <group>
+                        <group string="Datos del Animal">
+                          <field name="animal_id"/>
+                          <field name="owner_id" readonly="1"/>
+                          <field name="specie_id" readonly="1"/>
+                        </group>
+                        <group string="Medicación">
+                          <field name="medicine_id"/>
+                          <field name="quantity_units" string="Cantidad (unidades)"/>
+                          <field name="consume_stock"/>
+                          <field name="date"/>
+                          <field name="doctor"/>
+                        </group>
+                      </group>
+                      <group string="Lote / Observaciones">
+                        <field name="lot_number"/>
+                        <field name="lot_expiration"/>
+                        <field name="notes"/>
+                      </group>
+                    </form>
+                  </field>
+                </group>
+              </page>
+
+              <!-- ======== VACUNAS (con detalles de dosis/lote) ======== -->
+              <page string="Vacunas">
+                <field name="vaccination_ids" context="{'default_animal_id': active_id}">
+                  <tree editable="bottom">
+                    <field name="vaccine_id"/>
+                    <field name="date"/>
+                    <field name="applied_doses" string="Dosis aplicadas"/>
+                    <field name="route"/>
+                    <field name="doctor" string="Dr/Dra"/>
+                    <field name="next_date"/>
+                    <field name="consume_stock"/>
+                    <field name="lot_number"/>
+                    <field name="lot_expiration"/>
+                    <field name="notes"/>
+                  </tree>
+                  <form>
+                    <group string="Vacunación">
+                      <group>
+                        <field name="vaccine_id"/>
+                        <field name="date"/>
+                        <field name="applied_doses" string="Dosis aplicadas"/>
+                      </group>
+                      <group>
+                        <field name="route"/>
+                        <field name="doctor" string="Dr/Dra" placeholder="Nombre del profesional"/>
+                        <field name="consume_stock"/>
+                      </group>
+                      <group>
+                        <field name="next_date"/>
+                        <field name="owner_id" readonly="1"/>
+                        <field name="specie_id" readonly="1"/>
+                      </group>
+                      <group string="Lote">
+                        <field name="lot_number"/>
+                        <field name="lot_expiration"/>
+                      </group>
+                      <field name="notes" placeholder="Observaciones adicionales..."/>
+                    </group>
+                  </form>
+                </field>
+
+                <group string="Resumen de vacunas aplicadas (solo lectura)">
+                  <field name="vaccines" widget="many2many_tags" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" readonly="1"/>
+                </group>
+              </page>
+
+              <!-- ======== DESPARASITACIONES ======== -->
+              <page string="Desparasitaciones">
+                <field name="deworming_ids" context="{'default_animal_id': active_id}">
+                  <tree editable="bottom">
+                    <field name="dewormer_id" string="Desparasitante"/>
+                    <field name="date" string="Fecha"/>
+                    <field name="route" string="Vía"/>
+                    <field name="doctor" string="Dr/Dra"/>
+                    <field name="next_date" string="Próxima desparasitación"/>
+                    <field name="notes" string="Notas"/>
+                  </tree>
+                  <form>
+                    <group string="Desparasitación">
+                      <group>
+                        <field name="dewormer_id" string="Desparasitante"/>
+                        <field name="date" string="Fecha"/>
+                      </group>
+                      <group>
+                        <field name="route" string="Vía de administración"/>
+                        <field name="doctor" string="Dr/Dra" placeholder="Nombre del profesional"/>
+                      </group>
+                      <group>
+                        <field name="next_date" string="Próxima desparasitación"/>
+                        <field name="owner_id" readonly="1"/>
+                      </group>
+                      <field name="notes" placeholder="Observaciones adicionales..."/>
+                    </group>
+                  </form>
+                </field>
+
+                <group string="Resumen de desparasitaciones (solo lectura)">
+                  <field name="dewormers" widget="many2many_tags" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" readonly="1"/>
+                </group>
+              </page>
+
+              <page string="Alergias">
+                <field name="allergies" context="{'default_animal_ids': [(4, active_id)]}">
+                  <tree editable="bottom">
+                    <field name="name"/>
+                    <field name="allergy_type"/>
+                    <field name="severity"/>
+                  </tree>
+                  <form>
+                    <group>
+                      <field name="name"/>
+                      <field name="allergy_type"/>
+                      <field name="severity"/>
+                      <field name="description"/>
+                      <field name="symptoms"/>
+                      <field name="treatment"/>
+                    </group>
+                  </form>
+                </field>
+              </page>
+
+              <page string="Cirugías">
+                <field name="surgeries" />
+              </page>
+
+              <page string="Otras informaciones">
+                <group>
+                  <group>
+                    <field name="sex" />
+                  </group>
+                  <group>
+                    <field name="size" />
+                  </group>
+                  <div class="d-flex">
+                    <group>
+                      <field name="weight" string="Peso" />
+                    </group>
+                    <span>Kg.</span>
+                  </div>
+                  <group>
+                    <field name="birthdate" />
+                  </group>
+                  <group>
+                    <field name="age" string="Edad"/>
+                  </group>
+                  <group>
+                    <field name="reproductive_status" string="Esterilizado/Entero"/>
+                  </group>
+                </group>
+                <group>
+                  <group>
+                    <field name="tags" string="Color" widget="many2many_tags" options="{'color_field': 'color'}" />
+                  </group>
+                  <group>
+                    <field name="active" />
+                  </group>
+                </group>
+                <div>
+                  <label for="internal_notes" string="Notas" />
+                  <div>
+                    <field name="internal_notes" />
+                  </div>
+                </div>
+              </page>
+            </notebook>
+          </sheet>
+          <div class="oe_chatter">
+            <field widget="mail_thread" name="message_ids" />
+            <field widget="mail_activity" name="activity_ids" />
+          </div>
+        </form>
+      </field>
+    </record>
+
+    <record id="vet_kanban_view" model="ir.ui.view">
+      <field name="name">animal.kanban.view</field>
+      <field name="model">animal</field>
+      <field name="arch" type="xml">
+        <kanban class="o_kanban_mobile" sample="1">
+          <templates>
+            <t t-name="kanban-box">
+              <div t-attf-class="oe_kanban_global_click">
+                <div class="row">
+                  <div class="col-12">
+                    <strong>
+                      <div>
+                        <field name="name" /> (<field name="species" />) </div>
+                    </strong>
+                    <div> Dueño: <field name="owner" /></div>
+                  </div>
+                </div>
+                <div>
+                  <hr class="my-2" />
+                    <strong>ID</strong>: <field name="identification" />
+                </div>
+                <div class="d-flex justify-content-between">
+                  <field name="sex" />
+                  <field name="activity_ids" widget="kanban_activity" />
+                </div>
+              </div>
+            </t>
+          </templates>
+        </kanban>
+      </field>
+    </record>
+
+    <record id="animals_action" model="ir.actions.act_window">
+      <field name="name">Animales</field>
+      <field name="res_model">animal</field>
+      <field name="view_mode">search,tree,form,kanban</field>
+    </record>
+
+  </data>
+</odoo>

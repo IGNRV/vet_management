@@ -1,0 +1,10 @@
+<odoo>
+    <data>
+
+        <record id="tag_action" model="ir.actions.act_window">
+            <field name="name">Etiquetas</field>
+            <field name="res_model">animal.tag</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    </data>
+</odoo>

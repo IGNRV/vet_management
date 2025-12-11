@@ -1,0 +1,174 @@
+<odoo>
+    <data>
+
+        <!-- === SEARCH (catálogo) === -->
+        <record id="medicine_search_view" model="ir.ui.view">
+            <field name="name">animal.medicine.search.view</field>
+            <field name="model">animal.medicine</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" string="Medicamento"/>
+                    <field name="description" string="Descripción"/>
+                    <group expand="0" string="Agrupar por">
+                        <filter name="grp_name" string="Nombre" context="{'group_by':'name'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- === TREE (catálogo) === -->
+        <record id="medicine_tree_view" model="ir.ui.view">
+            <field name="name">animal.medicine.tree.view</field>
+            <field name="model">animal.medicine</field>
+            <field name="arch" type="xml">
+                <tree string="Medicamentos">
+                    <field name="name"/>
+                    <field name="packs_per_box"/>
+                    <field name="units_per_pack"/>
+                    <field name="stock_boxes"/>
+                    <field name="stock_packs"/>
+                    <field name="stock_units"/>
+                    <field name="stock_total_units" readonly="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- === FORM (catálogo) === -->
+        <record id="medicine_form_view" model="ir.ui.view">
+            <field name="name">animal.medicine.form.view</field>
+            <field name="model">animal.medicine</field>
+            <field name="arch" type="xml">
+                <form string="Medicamento">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="description"/>
+                            </group>
+                            <group string="Presentación">
+                                <field name="packs_per_box"/>
+                                <field name="units_per_pack"/>
+                                <field name="packaging_notes"/>
+                            </group>
+                        </group>
+                        <group string="Stock">
+                            <group>
+                                <field name="stock_boxes"/>
+                                <field name="stock_packs"/>
+                                <field name="stock_units"/>
+                            </group>
+                            <group>
+                                <field name="stock_total_units" readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- === ACTION (catálogo) === -->
+        <record id="medicine_action" model="ir.actions.act_window">
+            <field name="name">Medicamentos</field>
+            <field name="res_model">animal.medicine</field>
+            <field name="view_mode">search,tree,form</field>
+            <field name="view_id" ref="medicine_tree_view"/>
+        </record>
+
+        <!-- ===================================================== -->
+        <!-- ============ REGISTROS DE MEDICACIÓN ================ -->
+        <!-- ===================================================== -->
+
+        <!-- Search -->
+        <record id="medication_search_view" model="ir.ui.view">
+            <field name="name">animal.medication.search.view</field>
+            <field name="model">animal.medication</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="animal_id" string="Animal"/>
+                    <field name="owner_id" string="Dueño"/>
+                    <field name="specie_id" string="Especie"/>
+                    <field name="medicine_id" string="Medicamento"/>
+                    <field name="date" string="Fecha"/>
+                    <field name="doctor" string="Dr/Dra"/>
+                    <field name="notes" string="Notas"/>
+                    <field name="quantity_units" string="Cantidad (unidades)"/>
+                    <field name="lot_number" string="Lote"/>
+                    <field name="lot_expiration" string="Vencimiento"/>
+
+                    <group expand="0" string="Agrupar por">
+                        <filter name="grp_animal" string="Animal" context="{'group_by':'animal_id'}"/>
+                        <filter name="grp_owner" string="Dueño" context="{'group_by':'owner_id'}"/>
+                        <filter name="grp_specie" string="Especie" context="{'group_by':'specie_id'}"/>
+                        <filter name="grp_medicine" string="Medicamento" context="{'group_by':'medicine_id'}"/>
+                        <filter name="grp_doctor" string="Dr/Dra" context="{'group_by':'doctor'}"/>
+                        <filter name="grp_date" string="Fecha" context="{'group_by':'date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Tree -->
+        <record id="medication_tree_view" model="ir.ui.view">
+            <field name="name">animal.medication.tree.view</field>
+            <field name="model">animal.medication</field>
+            <field name="arch" type="xml">
+                <tree string="Registros de Medicación">
+                    <field name="date"/>
+                    <field name="animal_id"/>
+                    <field name="owner_id"/>
+                    <field name="specie_id"/>
+                    <field name="medicine_id"/>
+                    <field name="quantity_units"/>
+                    <field name="doctor"/>
+                    <field name="consume_stock"/>
+                    <field name="lot_number"/>
+                    <field name="lot_expiration"/>
+                    <field name="notes"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form -->
+        <record id="medication_form_view" model="ir.ui.view">
+            <field name="name">animal.medication.form.view</field>
+            <field name="model">animal.medication</field>
+            <field name="arch" type="xml">
+                <form string="Registro de Medicación">
+                    <sheet>
+                        <group>
+                            <group string="Datos del Animal">
+                                <field name="animal_id" required="1"/>
+                                <field name="owner_id" readonly="1"/>
+                                <field name="specie_id" readonly="1"/>
+                            </group>
+                            <group string="Medicación">
+                                <field name="medicine_id" required="1"/>
+                                <field name="quantity_units" required="1"/>
+                                <field name="consume_stock"/>
+                                <field name="date" required="1"/>
+                                <field name="doctor" string="Dr/Dra"/>
+                            </group>
+                        </group>
+                        <group string="Lote / Observaciones">
+                            <field name="lot_number"/>
+                            <field name="lot_expiration"/>
+                            <field name="notes"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field widget="mail_thread" name="message_ids"/>
+                        <field widget="mail_activity" name="activity_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action (registros) -->
+        <record id="medication_action" model="ir.actions.act_window">
+            <field name="name">Registros de Medicación</field>
+            <field name="res_model">animal.medication</field>
+            <field name="view_mode">search,tree,form,kanban</field>
+        </record>
+
+    </data>
+</odoo>
