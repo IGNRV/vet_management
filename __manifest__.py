@@ -13,7 +13,7 @@ Incluye visitas, vacunas, cirugías, recetas y más.
     'website': "https://z99sys.cl/",
     'license': 'OPL-1',  # Cambiado desde AGPL-3 para permitir venta en Odoo Apps
     'category': 'Animales',
-    'version': '17.0.1.0.2',  # Debe iniciar con la serie para Odoo 17
+    'version': '17.0.1.0.3',  # Debe iniciar con la serie para Odoo 17
 
     # any module necessary for this one to work correctly
     'depends': ['base','mail'],
